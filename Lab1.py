@@ -10,9 +10,11 @@ import pandas as pd
 import numpy as np
 
 ### paquetes de graficos
-import matplotlib.pyplot as plot
-from scipy import stats
 
+import matplotlib.pyplot as plot
+
+from scipy import stats
+import statistics
 
 
 ######  paquetes de analitica de datos
@@ -28,6 +30,11 @@ from tkinter import ttk
 
 
 ### Funciones
+
+    
+    
+    
+    
 def IdentificarAtipicos(df, ft, valorAlfa):
     q1 = df[ft].quantile(0.25)
     q3 = df[ft].quantile(0.75)
@@ -94,8 +101,6 @@ def Graph():
     type_plot = com_graph_entrada.get()
     name_col = desplegable_entrada.get()
     
-    
-    
     if type_plot == 'Histogram':
         Histograma(dataframe, name_col)
     elif type_plot == 'BoxPlot':
@@ -131,6 +136,154 @@ def validacion_2(event):
         entrada_num_1['state'] = "normal"
     else:
         entrada_num_1['state'] = "disabled"
+        
+def ventana2():
+    def datosEstadisticos(datos):
+        lista_datos = []
+        lista_datos.append(statistics.mean(datos))
+        lista_datos.append(statistics.mode(datos))
+        lista_datos.append(statistics.median(datos))
+        lista_datos.append(stats.kurtosis(datos))
+        lista_datos.append(stats.skew(datos))
+        
+        return lista_datos
+    list_length=datosEstadisticos(datos['length'])
+    list_Diameter=datosEstadisticos(datos['Diameter'])
+    list_Height=datosEstadisticos(datos['Height'])
+    list_Whole_weight=datosEstadisticos(datos['Whole weight'])
+    list_Shucked_weight=datosEstadisticos(datos['Shucked weight'])
+    list_Viscera_weight=datosEstadisticos(datos['Viscera weight'])
+    list_Shell_weight=datosEstadisticos(datos['Shell weight'])
+    list_Rings=datosEstadisticos(datos['Rings'])
+    
+    ventana_2 = tk.Tk()
+    
+    #titulo
+    
+    
+    label_1 = tk.Label(ventana_2,text="Columm's Name",
+                              fg="blue",
+                              font="consolas 12 bold",borderwidth=3)
+    label_1.grid(padx=10, pady=10, row=1, column=0,)
+    
+    
+    label_2 = tk.Label(ventana_2,text="length",
+                              fg="blue",
+                              font="consolas 12 bold",borderwidth=3)
+    label_2.grid(padx=10, pady=10, row=2, column=0, )
+    
+    label_3 = tk.Label(ventana_2,text="Diameter",
+                              fg="blue",
+                              font="consolas 12 bold",borderwidth=3)
+    label_3.grid(padx=10, pady=10, row=3, column=0, )
+    
+    label_4 = tk.Label(ventana_2,text="Height",
+                              fg="blue",
+                              font="consolas 12 bold",borderwidth=3)
+    label_4.grid(padx=10, pady=10, row=4, column=0, )
+    
+    label_5 = tk.Label(ventana_2,text="Whole weight",
+                              fg="blue",
+                              font="consolas 12 bold",borderwidth=3)
+    label_5.grid(padx=10, pady=10, row=5, column=0, )
+    
+    label_6 = tk.Label(ventana_2,text="Shucked weight",
+                              fg="blue",
+                              font="consolas 12 bold",borderwidth=3)
+    label_6.grid(padx=10, pady=10, row=6, column=0, )
+    
+    label_7 = tk.Label(ventana_2,text="Viscera weight",
+                              fg="blue",
+                              font="consolas 12 bold",borderwidth=3)
+    label_7.grid(padx=10, pady=10, row=7, column=0, )
+    
+    label_8 = tk.Label(ventana_2,text="Shell weight",
+                              fg="blue",
+                              font="consolas 12 bold",borderwidth=3)
+    label_8.grid(padx=10, pady=10, row=8, column=0, )
+    
+    label_9 = tk.Label(ventana_2,text="Rings",
+                              fg="blue",
+                              font="consolas 12 bold",borderwidth=3)
+    label_9.grid(padx=10, pady=10, row=9, column=0, )
+    
+    
+    
+    label_10 = tk.Label(ventana_2,text="Mean",
+                              fg="blue",
+                              font="consolas 12 bold",)
+    label_10.grid(padx=10, pady=10, row=1, column=1, )
+    
+    label_11 = tk.Label(ventana_2,text="mode",
+                              fg="blue",
+                              font="consolas 12 bold",)
+    label_11.grid(padx=10, pady=10, row=1, column=2, )
+    
+    label_12 = tk.Label(ventana_2,text="median",
+                              fg="blue",
+                              font="consolas 12 bold",)
+    label_12.grid(padx=10, pady=10, row=1, column=3, )
+    
+    label_13 = tk.Label(ventana_2,text="Kurtosis",
+                              fg="blue",
+                              font="consolas 12 bold",)
+    label_13.grid(padx=10, pady=10, row=1, column=4, )
+    
+    label_14 = tk.Label(ventana_2,text="skewness",
+                              fg="blue",
+                              font="consolas 12 bold",)
+    label_14.grid(padx=10, pady=10, row=1, column=5, )
+    
+    len_mean = tk.Label(ventana_2,text=str(list_length[0]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=2, column=1)
+    len_mode = tk.Label(ventana_2,text=str(list_length[1]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=2, column=2)
+    len_median = tk.Label(ventana_2,text=str(list_length[2]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=2, column=3)
+    len_kurt = tk.Label(ventana_2,text=str(list_length[3]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=2, column=4)
+    len_skewn = tk.Label(ventana_2,text=str(list_length[4]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=2, column=5)
+
+
+    dia_mean = tk.Label(ventana_2,text=str(list_Diameter[0]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=3, column=1)
+    dia_mode = tk.Label(ventana_2,text=str(list_Diameter[1]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=3, column=2)
+    dia_median = tk.Label(ventana_2,text=str(list_Diameter[2]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=3, column=3)
+    dia_kurt = tk.Label(ventana_2,text=str(list_Diameter[3]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=3, column=4)
+    dia_skewn = tk.Label(ventana_2,text=str(list_Diameter[4]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=3, column=5)
+
+    hei_mean = tk.Label(ventana_2,text=str(list_Height[0]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=4, column=1)
+    hei_mode = tk.Label(ventana_2,text=str(list_Height[1]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=4, column=2)
+    hei_median = tk.Label(ventana_2,text=str(list_Height[2]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=4, column=3)
+    hei_kurt = tk.Label(ventana_2,text=str(list_Height[3]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=4, column=4)
+    hei_skewn = tk.Label(ventana_2,text=str(list_Height[4]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=4, column=5)
+
+    whole_mean = tk.Label(ventana_2,text=str(list_Whole_weight[0]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=5, column=1)
+    whole_mode = tk.Label(ventana_2,text=str(list_Whole_weight[1]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=5, column=2)
+    whole_median = tk.Label(ventana_2,text=str(list_Whole_weight[2]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=5, column=3)
+    whole_kurt = tk.Label(ventana_2,text=str(list_Whole_weight[3]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=5, column=4)
+    whole_skewn = tk.Label(ventana_2,text=str(list_Whole_weight[4]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=5, column=5)
+
+    shuck_mean = tk.Label(ventana_2,text=str(list_Shucked_weight[0]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=6, column=1)
+    shuck_mode = tk.Label(ventana_2,text=str(list_Shucked_weight[1]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=6, column=2)
+    shuck_median = tk.Label(ventana_2,text=str(list_Shucked_weight[2]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=6, column=3)
+    shuck_kurt = tk.Label(ventana_2,text=str(list_Shucked_weight[3]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=6, column=4)
+    shuck_skewn = tk.Label(ventana_2,text=str(list_Shucked_weight[4]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=6, column=5)
+
+    vis_mean = tk.Label(ventana_2,text=str(list_Viscera_weight[0]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=7, column=1)
+    vis_mode = tk.Label(ventana_2,text=str(list_Viscera_weight[1]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=7, column=2)
+    vis_median = tk.Label(ventana_2,text=str(list_Viscera_weight[2]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=7, column=3)
+    vis_kurt = tk.Label(ventana_2,text=str(list_Viscera_weight[3]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=7, column=4)
+    vis_skewn = tk.Label(ventana_2,text=str(list_Viscera_weight[4]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=7, column=5)
+
+    she_mean = tk.Label(ventana_2,text=str(list_Shell_weight[0]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=8, column=1)
+    she_mode = tk.Label(ventana_2,text=str(list_Shell_weight[1]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=8, column=2)
+    she_median = tk.Label(ventana_2,text=str(list_Shell_weight[2]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=8, column=3)
+    she_kurt = tk.Label(ventana_2,text=str(list_Shell_weight[3]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=8, column=4)
+    she_skewn = tk.Label(ventana_2,text=str(list_Shell_weight[4]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=8, column=5)
+
+    rin_mean = tk.Label(ventana_2,text=str(list_Rings[0]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=9, column=1)
+    rin_mode = tk.Label(ventana_2,text=str(list_Rings[1]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=9, column=2)
+    rin_median = tk.Label(ventana_2,text=str(list_Rings[2]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=9, column=3)
+    rin_kurt = tk.Label(ventana_2,text=str(list_Rings[3]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=9, column=4)    
+    rin_skewn = tk.Label(ventana_2,text=str(list_Rings[4]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=9, column=5)
+
+
 #### Main
 
 archivo='abalone.csv'
@@ -156,17 +309,6 @@ aux = ['length',
 'Viscera weight',
 'Shell weight',
 'Rings' ]
-index_list = []
-for i in aux:
-    index_list.extend(IdentificarAtipicos(datos, i,1.5))
-final_index_list = []
-for index in index_list:
-    if index not in final_index_list:
-        final_index_list.append(index)
-
-new_df = eliminar(datos,index_list)
-new_df.columns=columnas
-
 
 ### modelo de una sola entrada
 
@@ -186,6 +328,7 @@ print('entrada longitud, salida anillos',modelo.score(np.array(X).reshape(-1, 1)
 predicciones = modelo.predict(X = np.array(X_test).reshape(-1,1))
 rmse = mean_squared_error(y_true  = y_test, y_pred  = predicciones)
 print('el valor del rmse es',rmse)
+print(stats.kurtosis(datos['Diameter']))
 
 
 
@@ -271,7 +414,15 @@ com_graph_entrada_3.bind("<<ComboboxSelected>>", validacion_2)
 my_button = tk.Button(ventana, text="Graph It!", font="consolas 14 bold", command=Graph)
 my_button.grid(padx=10, pady=10, row=4, column=0, columnspan=2)
 
+my_button_2 = tk.Button(ventana, text="DataSet Info", font="consolas 14 bold", command=ventana2)
+my_button_2.grid(padx=10, pady=10, row=4, column=4, columnspan=2)
+
+
 ventana.mainloop()
+
+
+
+
 
 
 
