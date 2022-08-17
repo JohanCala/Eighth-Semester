@@ -12,6 +12,8 @@ import numpy as np
 ### paquetes de graficos
 
 import matplotlib.pyplot as plot
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from scipy import stats
 import statistics
@@ -51,37 +53,10 @@ def eliminar(df, index):
     df = df.drop(index)
     return df
 
-def Histograma(df,col):
-    plot.title(col + "----Histograma")
-    plot.hist(df[col])
-    plot.show()
 
-
-def Bigotes(df, col):
-    plot.title(col + "----Diagrama de Caja")
-    plot.boxplot(df[col])
-    plot.show()
-
-def Normalización(df, col):
-    fig=plot.figure()
-    ax=fig.add_subplot(111)
-    res=stats.probplot(df[col],dist=stats.norm,plot=ax)
-    plot.show()
-
-def Dispersión(df,col1,col2):
-    plot.scatter((df[col1]), (df[col2]))
-    plot.xlabel(col1)
-    plot.ylabel(col2)
-    plot.show()
-
-def Correlación(df,col1,col2):
-    plot.xcorr(df[col1], df[col2])
-    plot.xlabel(col1)
-    plot.ylabel(col2)
-    plot.show()
 
 def Graph():
-    dataframe = datos   
+    dataframe = datos.copy()   
     atipico = com_graph_entrada_3.get()
     if atipico == 'Yes':
         valor_alpha = float(entrada_num_1.get())
@@ -96,27 +71,49 @@ def Graph():
         dataframe = eliminar(dataframe,index_list)
         dataframe.columns=columnas
     else:
-        dataframe = datos
+        dataframe = datos.copy()
     
     type_plot = com_graph_entrada.get()
     name_col = desplegable_entrada.get()
     
+    ventana_graf = tk.Tk()
+    ventana_graf.title("Data analytics and artificial intelligence")
+   
+    
+    fig = Figure(figsize=(5, 4), dpi=100)
+    plot=fig.add_subplot(111)
+
+    
     if type_plot == 'Histogram':
-        Histograma(dataframe, name_col)
+        #plot.title(col + "----Histograma")
+        plot.hist(dataframe[name_col])
+        
     elif type_plot == 'BoxPlot':
-        Bigotes(dataframe, name_col)
+        
+        plot.boxplot(dataframe[name_col])
+        
+
     elif type_plot == 'Normalization':
-        Normalización(dataframe,name_col)
+       
+       ax=fig.add_subplot(111)
+       res=stats.probplot(dataframe[name_col],dist=stats.norm,plot=ax)
+       
     elif type_plot == 'Scatter':
         name_col_2 = desplegable_entrada_2.get()
-        Dispersión(dataframe, name_col, name_col_2)
+        plot.scatter((dataframe[name_col]), (dataframe[name_col_2]))
     else:
-        tk.messagebox.showinfo(message="please select all the options ", title="Alert")
+        tk.messagebox.showinfo(message="Please select all the options ", title="Alert")
+        
+    canvas = FigureCanvasTkAgg(fig, master=ventana_graf)
+    canvas.draw()
+    canvas.get_tk_widget().pack() 
+    canvas.get_tk_widget().pack()
     
     com_graph_entrada.set("")
     desplegable_entrada.set("")
     desplegable_entrada_2.set("")
     desplegable_entrada_2["state"]="disable"
+    entrada_num_1["text"]=""
 
 def validacion(event):
     if com_graph_entrada.get() == 'Scatter':
@@ -157,6 +154,7 @@ def ventana2():
     list_Rings=datosEstadisticos(datos['Rings'])
     
     ventana_2 = tk.Tk()
+    ventana_2.title("Data analytics and artificial intelligence")
     
     #titulo
     
@@ -284,6 +282,223 @@ def ventana2():
     rin_skewn = tk.Label(ventana_2,text=str(list_Rings[4]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=9, column=5)
 
 
+def Ventana3():
+    
+    def Calcular():
+        if desplegable_entrada_Y.get() == desplegable_entrada_X.get():
+            
+            tk.messagebox.showinfo(message="Please do not be useless, select different values for X and Y ", title="Alert")
+        else:
+            dataframe = datos.copy() 
+            valor_alpha = float(entrada_num_1.get())
+            
+            valor_alpha = float(entrada_num_1.get())
+            index_list = []
+            for i in aux:
+                index_list.extend(IdentificarAtipicos(dataframe, i,valor_alpha))
+            final_index_list = []
+            for index in index_list:
+                if index not in final_index_list:
+                    final_index_list.append(index)
+
+            dataframe = eliminar(dataframe,index_list)
+            dataframe.columns=columnas
+            ##### Con atipicos
+            X=datos[desplegable_entrada_X]
+            Y=datos[desplegable_entrada_Y]
+
+            X_train, X_test, y_train, y_test = train_test_split(
+                                                    X,
+                                                    Y,
+                                                    train_size   = 0.5,
+                                                )
+
+            modelo = LinearRegression()
+            modelo.fit(X = np.array(X_train).reshape(-1, 1), y = y_train)
+            r_score=modelo.score(np.array(X).reshape(-1, 1), Y)
+
+            predicciones = modelo.predict(X = np.array(X_test).reshape(-1,1))
+            rmse = mean_squared_error(y_true  = y_test, y_pred  = predicciones)
+            
+            label_model_Rmse["text"] = str(rmse)
+            label_model_score["text"] = str(r_score)
+            
+            #### Sin atipicos
+            
+            X=dataframe[desplegable_entrada_X]
+            Y=dataframe[desplegable_entrada_Y]
+
+            X_train, X_test, y_train, y_test = train_test_split(
+                                                    X,
+                                                    Y,
+                                                    train_size   = 0.5,
+                                                )
+
+            modelo_sin = LinearRegression()
+            modelo_sin.fit(X = np.array(X_train).reshape(-1, 1), y = y_train)
+            r_score_sin_a=modelo_sin.score(np.array(X).reshape(-1, 1), Y)
+
+            predicciones_sin = modelo_sin.predict(X = np.array(X_test).reshape(-1,1))
+            rmse_sin = mean_squared_error(y_true  = y_test, y_pred  = predicciones_sin)
+            
+            
+            label_model_Rmse_sin_a["text"]=str(rmse_sin)
+            label_model_score_sin_A["text"]=str(r_score_sin_a)
+            
+    ventana = tk.Tk()
+    ventana.title("Data analytics")
+    ventana.configure(bg="lightblue")
+    titulo = tk.Label(ventana,text='Linear Regression Model Comparison',bg="lightblue",
+                              fg="blue",
+                              font="consolas 25 bold")
+    titulo.grid(padx=20, pady=20, row=0, column=0, columnspan=4)
+    subt = tk.Label(ventana,text='Type your alpha value:',bg="lightblue",
+                              fg="black",
+                              font="consolas 14 bold").grid(padx=20, pady=20, row=1, column=0)
+    entrada_num_1 = tk.Entry(ventana,bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=5, pady=5, row=1, column=1)
+
+    #una sola entrada 
+    label_1 = tk.Label(ventana,text='One input',
+                              bg="lightblue",fg="black",
+                              font="consolas 18 bold").grid(padx=5, pady=5, row=2, column=0,columnspan=2)
+    label_2 = tk.Label(ventana,text='Select X:',
+                              bg="lightblue",fg="black",
+                              font="consolas 14 bold").grid(padx=5, pady=5, row=3, column=0)
+
+    desplegable_entrada_X = ttk.Combobox(ventana,font="consolas 14 bold",
+                                      width=16,
+                                      values=aux,
+                                      state="readonly").grid(padx=5, pady=5, row=3, column=1,)
+
+    label_3 = tk.Label(ventana,text='Select Y:',
+                              bg="lightblue",fg="black",
+                              font="consolas 14 bold").grid(padx=5, pady=5, row=4, column=0)
+    desplegable_entrada_Y = ttk.Combobox(ventana,font="consolas 14 bold",
+                                      width=16,
+                                      values=aux,
+                                      state="readonly").grid(padx=5, pady=5, row=4, column=1,)
+
+    my_button_1 = tk.Button(ventana, text="Predict", font="consolas 14 bold", command=Calcular).grid(padx=5, pady=5, row=5, column=0,columnspan=2 )
+    label_8 = tk.Label(ventana,text='With the outliers',
+                              bg="lightblue",fg="blue",
+                              font="consolas 20 bold").grid(padx=5, pady=5, row=6, column=0,columnspan=2)
+    label_4 = tk.Label(ventana,text='Model Score:',
+                              bg="lightblue",fg="black",
+                              font="consolas 14 bold").grid(padx=5, pady=5, row=7, column=0)
+
+    label_model_score = tk.Label(ventana,text='',
+                              bg="lightblue",fg="black",
+                              font="consolas 14 bold").grid(padx=5, pady=5, row=7, column=1)
+
+    label_5 = tk.Label(ventana,text='RMSE value:',
+                              bg="lightblue",fg="black",
+                              font="consolas 14 bold").grid(padx=5, pady=5, row=8, column=0)
+
+    label_model_Rmse = tk.Label(ventana,text='',
+                              bg="lightblue",fg="black",
+                              font="consolas 14 bold").grid(padx=5, pady=5, row=8, column=1)
+    label_9 = tk.Label(ventana,text='Without outliers',
+                              bg="lightblue",fg="blue",
+                              font="consolas 20 bold").grid(padx=5, pady=5, row=9, column=0,columnspan=2)
+
+
+    label_6 = tk.Label(ventana,text='Model Score:',
+                              bg="lightblue",fg="black",
+                              font="consolas 14 bold").grid(padx=5, pady=5, row=10, column=0)
+
+    label_model_score_sin_A = tk.Label(ventana,text='',
+                              bg="lightblue",fg="black",
+                              font="consolas 14 bold").grid(padx=5, pady=5, row=10, column=1)
+
+    label_7 = tk.Label(ventana,text='RMSE value:',
+                              bg="lightblue",fg="black",
+                              font="consolas 14 bold").grid(padx=5, pady=5, row=11, column=0)
+
+    label_model_Rmse_sin_a = tk.Label(ventana,text='',
+                              bg="lightblue",fg="black",
+                              font="consolas 14 bold").grid(padx=5, pady=5, row=11, column=1)
+
+    label_aux = tk.Label(ventana,text='',
+                              bg="lightblue",fg="black",
+                              font="consolas 20 bold").grid(padx=5, pady=5, row=2, column=4)
+
+
+
+    ########################################## entradas multiples
+
+    label_10 = tk.Label(ventana,text='Multiple Entries',
+                              bg="lightblue",fg="black",
+                              font="consolas 20 bold").grid(padx=5, pady=5, row=0, column=5)
+
+    label_11 = tk.Label(ventana,text='Select X:',
+                              bg="lightblue",fg="black",
+                              font="consolas 14 bold").grid(padx=5, pady=5, row=1, column=5,columnspan=2)
+
+
+    tk.Checkbutton(ventana,text="Lenght        ",bg="lightblue",font="consolas 10 bold",variable=aux[0]).grid(padx=5, pady=5, row=2, column=5)
+    tk.Checkbutton(ventana,text="Diameter      ",bg="lightblue",font="consolas 10 bold",variable=aux[1]).grid(padx=5, pady=5, row=3, column=5)
+    tk.Checkbutton(ventana,text="Whole weight  ",bg="lightblue",font="consolas 10 bold",variable=aux[2]).grid(padx=5, pady=5, row=4, column=5)
+    tk.Checkbutton(ventana,text="Whole weight  ",bg="lightblue",font="consolas 10 bold",variable=aux[3]).grid(padx=5, pady=5, row=5, column=5)
+    tk.Checkbutton(ventana,text="Shucked weight",bg="lightblue",font="consolas 10 bold",variable=aux[4]).grid(padx=5, pady=5, row=2, column=6)
+    tk.Checkbutton(ventana,text="Viscera weight",bg="lightblue",font="consolas 10 bold",variable=aux[5]).grid(padx=5, pady=5, row=3, column=6)
+    tk.Checkbutton(ventana,text="Shell weight  ",bg="lightblue",font="consolas 10 bold",variable=aux[6]).grid(padx=5, pady=5, row=4, column=6)
+    tk.Checkbutton(ventana,text="Rings         ",bg="lightblue",font="consolas 10 bold",variable=aux[7]).grid(padx=5, pady=5, row=5, column=6)
+
+    label_12 = tk.Label(ventana,text='Select Y:',
+                              bg="lightblue",fg="black",
+                              font="consolas 14 bold").grid(padx=5, pady=5, row=6, column=5)
+    desplegable_entrada_Y = ttk.Combobox(ventana,font="consolas 14 bold",
+                                      width=16,
+                                      values=aux,
+                                      state="readonly").grid(padx=5, pady=5, row=6, column=6)
+
+    my_button_1 = tk.Button(ventana, text="Predict", font="consolas 14 bold", command=Calcular).grid(padx=5, pady=5, row=7, column=5,columnspan=2 )
+
+    label_13 = tk.Label(ventana,text='With the outliers',
+                              bg="lightblue",fg="blue",
+                              font="consolas 20 bold").grid(padx=5, pady=5, row=8, column=5,columnspan=2)
+
+
+    label_15 = tk.Label(ventana,text='Model Score:',
+                              bg="lightblue",fg="black",
+                              font="consolas 14 bold").grid(padx=5, pady=5, row=9, column=5)
+
+    label_model_score_mul = tk.Label(ventana,text='',
+                              bg="lightblue",fg="black",
+                              font="consolas 14 bold").grid(padx=5, pady=5, row=9, column=6)
+
+    label_16 = tk.Label(ventana,text='RMSE value:',
+                              bg="lightblue",fg="black",
+                              font="consolas 14 bold").grid(padx=5, pady=5, row=10, column=5)
+
+    label_model_Rmse_mul = tk.Label(ventana,text='',
+                              bg="lightblue",fg="black",
+                              font="consolas 14 bold").grid(padx=5, pady=5, row=10, column=6)
+
+    label_14 = tk.Label(ventana,text='Without outliers',
+                              bg="lightblue",fg="blue",
+                              font="consolas 20 bold").grid(padx=5, pady=5, row=11, column=5,columnspan=2)
+
+    label_17 = tk.Label(ventana,text='Model Score:',
+                              bg="lightblue",fg="black",
+                              font="consolas 14 bold").grid(padx=5, pady=5, row=12, column=5)
+
+    label_model_score_sin_A = tk.Label(ventana,text='',
+                              bg="lightblue",fg="black",
+                              font="consolas 14 bold").grid(padx=5, pady=5, row=12, column=6)
+
+    label_18 = tk.Label(ventana,text='RMSE value:',
+                              bg="lightblue",fg="black",
+                              font="consolas 14 bold").grid(padx=5, pady=5, row=13, column=5)
+
+    label_model_Rmse_sin_a = tk.Label(ventana,text='',
+                              bg="lightblue",fg="black",
+                              font="consolas 14 bold").grid(padx=5, pady=5, row=13, column=6)
+
+
+
+
+
 #### Main
 
 archivo='abalone.csv'
@@ -312,7 +527,7 @@ aux = ['length',
 
 ### modelo de una sola entrada
 
-X=datos['Diameter']
+X=datos['length']
 Y=datos['Rings']
 
 X_train, X_test, y_train, y_test = train_test_split(
@@ -328,14 +543,14 @@ print('entrada longitud, salida anillos',modelo.score(np.array(X).reshape(-1, 1)
 predicciones = modelo.predict(X = np.array(X_test).reshape(-1,1))
 rmse = mean_squared_error(y_true  = y_test, y_pred  = predicciones)
 print('el valor del rmse es',rmse)
-print(stats.kurtosis(datos['Diameter']))
+
 
 
 
 #### ventana
 
 ventana = tk.Tk()
-ventana.title("a")
+ventana.title("Data analytics and artificial intelligence")
 
 
 ventana.configure(bg="lightblue")
@@ -347,9 +562,9 @@ ventana.configure(bg="lightblue")
 titulo = tk.Label(ventana,text='Abalone Analysis DataSet',
                           bg="lightblue",fg="black",
                           font="consolas 20 bold")
-titulo.grid(padx=20, pady=20, row=0, column=0, columnspan=2)
+titulo.grid(padx=20, pady=20, row=0, column=0, columnspan=5)
 
-rotulo_combo_3 = tk.Label(ventana,text='outliers: ',
+rotulo_combo_3 = tk.Label(ventana,text='Outliers: ',
                           bg="lightblue",fg="black",
                           font="consolas 14 bold")
 rotulo_combo_3.grid(padx=10, pady=10, row=1, column=0, )
@@ -414,8 +629,11 @@ com_graph_entrada_3.bind("<<ComboboxSelected>>", validacion_2)
 my_button = tk.Button(ventana, text="Graph It!", font="consolas 14 bold", command=Graph)
 my_button.grid(padx=10, pady=10, row=4, column=0, columnspan=2)
 
-my_button_2 = tk.Button(ventana, text="DataSet Info", font="consolas 14 bold", command=ventana2)
-my_button_2.grid(padx=10, pady=10, row=4, column=4, columnspan=2)
+my_button_2 = tk.Button(ventana, text="DataSet Info!", font="consolas 14 bold", command=ventana2)
+my_button_2.grid(padx=10, pady=10, row=4, column=2, columnspan=2)
+
+my_button_3 = tk.Button(ventana, text="Regression Model!", font="consolas 14 bold", command=Ventana3)
+my_button_3.grid(padx=10, pady=10, row=4, column=4, columnspan=2)
 
 
 ventana.mainloop()
