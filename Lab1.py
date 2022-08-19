@@ -281,14 +281,112 @@ def ventana2():
     rin_kurt = tk.Label(ventana_2,text=str(list_Rings[3]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=9, column=4)    
     rin_skewn = tk.Label(ventana_2,text=str(list_Rings[4]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=9, column=5)
 
+def ventana3():
+    def clean():
+        entrada_num_1.delete(0,"end")
+        label_model_Rmse_con_atip['text'] = ""
+        label_model_score_con_atip['text'] = ""
+        label_model_Rmse_sin_atip['text'] = ""
+        label_model_score_sin_atip['text'] = ""
+        
+    def clean2():
+        entrada_num_1.delete(0,"end")
+        desplegable_entrada_Y_m.set("")
+        regre_multi_con_a_rmse['text'] = ""
+        regre_multi_con_a_scor['text'] = ""
+        
+        regre_multi_sin_a_rmse['text'] = ""
+        regre_multi_sin_a_scor['text'] = ""
+        
+        
+    def CalcularM():
+        if entrada_num_1.get() == "":
+            tk.messagebox.showinfo(message="please enter the value of alpha ", title="Alert")
+        x = []
+        if seleccion1.get()==1:
+            x.append(check1['text'].strip())
+        if seleccion2.get()==1:
+            x.append(check2['text'].strip())
+        if seleccion3.get()==1:
+            x.append(check3['text'].strip())
+        if seleccion4.get()==1:
+            x.append(check4['text'].strip())
+        if seleccion5.get()==1:
+            x.append(check5['text'].strip())
+        if seleccion6.get()==1:
+            x.append(check6['text'].strip())
+        if seleccion7.get()==1:
+            x.append(check7['text'].strip())
+        if seleccion8.get()==1:
+            x.append(check8['text'].strip())
+        
+        
+        
+        dataframe = datos.copy() 
+        valor_alpha = float(entrada_num_1.get())
+        
+        valor_alpha = float(entrada_num_1.get())
+        index_list = []
+        for i in aux:
+            index_list.extend(IdentificarAtipicos(dataframe, i,valor_alpha))
+        final_index_list = []
+        for index in index_list:
+            if index not in final_index_list:
+                final_index_list.append(index)
 
-def Ventana3():
-    
+        dataframe = eliminar(dataframe,index_list)
+        dataframe.columns=columnas
+        
+        #Con atipicos 
+        X=datos[x]
+        Y=datos[desplegable_entrada_Y_m.get()]
+        model = LinearRegression()
+
+        X_train, X_test, y_train, y_test = train_test_split(X, Y, train_size=0.5)
+
+        model.fit(X = X_train, y = y_train)
+
+        y_predict = model.predict(X = np.array(X_test))
+
+        r2_m_con = r2_score(y_true=y_test,y_pred=y_predict)
+        rmse_m_con = mean_squared_error(y_true=y_test, y_pred=y_predict)
+        
+        regre_multi_con_a_rmse['text'] = str(rmse_m_con)
+        regre_multi_con_a_scor['text'] = str(r2_m_con)
+        #Sin atipicos
+        X=dataframe[x]
+        Y=dataframe[desplegable_entrada_Y_m.get()]
+        
+        model_a = LinearRegression()
+
+        X_train, X_test, y_train, y_test = train_test_split(X, Y, train_size=0.5)
+
+        model_a.fit(X = X_train, y = y_train)
+
+        y_predict = model_a.predict(X = np.array(X_test))
+
+        r2_m_sin_a = r2_score(y_true=y_test,y_pred=y_predict)
+        rmse_sin_a = mean_squared_error(y_true=y_test, y_pred=y_predict)
+        
+        regre_multi_con_a_rmse['text'] = str(rmse_m_con)
+        regre_multi_con_a_scor['text'] = str(r2_m_con)
+        
+        regre_multi_sin_a_rmse['text'] = str(rmse_sin_a)
+        regre_multi_sin_a_scor['text'] = str(r2_m_sin_a)
+        
+        
+
     def Calcular():
-        if desplegable_entrada_Y.get() == desplegable_entrada_X.get():
+        if entrada_num_1.get() == "":
+            tk.messagebox.showinfo(message="please enter the value of alpha ", title="Alert")
+            
+            
+        if desplegable_entrada_X.get() == desplegable_entrada_Y.get():
             
             tk.messagebox.showinfo(message="Please do not be useless, select different values for X and Y ", title="Alert")
         else:
+            
+            
             dataframe = datos.copy() 
             valor_alpha = float(entrada_num_1.get())
             
@@ -304,8 +402,8 @@ def Ventana3():
             dataframe = eliminar(dataframe,index_list)
             dataframe.columns=columnas
             ##### Con atipicos
-            X=datos[desplegable_entrada_X]
-            Y=datos[desplegable_entrada_Y]
+            X=datos[desplegable_entrada_X.get()]
+            Y=datos[desplegable_entrada_Y.get()]
 
             X_train, X_test, y_train, y_test = train_test_split(
                                                     X,
@@ -316,17 +414,22 @@ def Ventana3():
             modelo = LinearRegression()
             modelo.fit(X = np.array(X_train).reshape(-1, 1), y = y_train)
             r_score=modelo.score(np.array(X).reshape(-1, 1), Y)
-
             predicciones = modelo.predict(X = np.array(X_test).reshape(-1,1))
             rmse = mean_squared_error(y_true  = y_test, y_pred  = predicciones)
             
-            label_model_Rmse["text"] = str(rmse)
-            label_model_score["text"] = str(r_score)
+            
+            
+            
+            
+            
+            
+            
+            
             
             #### Sin atipicos
             
-            X=dataframe[desplegable_entrada_X]
-            Y=dataframe[desplegable_entrada_Y]
+            X=dataframe[desplegable_entrada_X.get()]
+            Y=dataframe[desplegable_entrada_Y.get()]
 
             X_train, X_test, y_train, y_test = train_test_split(
                                                     X,
@@ -341,10 +444,23 @@ def Ventana3():
             predicciones_sin = modelo_sin.predict(X = np.array(X_test).reshape(-1,1))
             rmse_sin = mean_squared_error(y_true  = y_test, y_pred  = predicciones_sin)
             
+            label_model_Rmse_con_atip['text'] = str(rmse)
+            label_model_score_con_atip['text'] = str(r_score)
+            label_model_Rmse_sin_atip['text'] = str(rmse_sin)
+            label_model_score_sin_atip['text'] = str(r_score_sin_a)
             
-            label_model_Rmse_sin_a["text"]=str(rmse_sin)
-            label_model_score_sin_A["text"]=str(r_score_sin_a)
             
+            
+            
+    aux = ['length',
+    'Diameter',
+    'Height',
+    'Whole weight',
+    'Shucked weight',
+    'Viscera weight',
+    'Shell weight',
+    'Rings' ]
+
     ventana = tk.Tk()
     ventana.title("Data analytics")
     ventana.configure(bg="lightblue")
@@ -355,8 +471,8 @@ def Ventana3():
     subt = tk.Label(ventana,text='Type your alpha value:',bg="lightblue",
                               fg="black",
                               font="consolas 14 bold").grid(padx=20, pady=20, row=1, column=0)
-    entrada_num_1 = tk.Entry(ventana,bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=5, pady=5, row=1, column=1)
-
+    entrada_num_1 = tk.Entry(ventana,bg="White",fg="black",font="consolas 14 bold",state="normal")
+    entrada_num_1.grid(padx=5, pady=5, row=1, column=1)
     #una sola entrada 
     label_1 = tk.Label(ventana,text='One input',
                               bg="lightblue",fg="black",
@@ -364,11 +480,12 @@ def Ventana3():
     label_2 = tk.Label(ventana,text='Select X:',
                               bg="lightblue",fg="black",
                               font="consolas 14 bold").grid(padx=5, pady=5, row=3, column=0)
-
     desplegable_entrada_X = ttk.Combobox(ventana,font="consolas 14 bold",
                                       width=16,
                                       values=aux,
-                                      state="readonly").grid(padx=5, pady=5, row=3, column=1,)
+                                      state="readonly")
+    desplegable_entrada_X.grid(row=3, column=1)
+
 
     label_3 = tk.Label(ventana,text='Select Y:',
                               bg="lightblue",fg="black",
@@ -376,7 +493,9 @@ def Ventana3():
     desplegable_entrada_Y = ttk.Combobox(ventana,font="consolas 14 bold",
                                       width=16,
                                       values=aux,
-                                      state="readonly").grid(padx=5, pady=5, row=4, column=1,)
+                                      state="readonly")
+    desplegable_entrada_Y.grid(row=4, column=1)
+
 
     my_button_1 = tk.Button(ventana, text="Predict", font="consolas 14 bold", command=Calcular).grid(padx=5, pady=5, row=5, column=0,columnspan=2 )
     label_8 = tk.Label(ventana,text='With the outliers',
@@ -386,17 +505,15 @@ def Ventana3():
                               bg="lightblue",fg="black",
                               font="consolas 14 bold").grid(padx=5, pady=5, row=7, column=0)
 
-    label_model_score = tk.Label(ventana,text='',
-                              bg="lightblue",fg="black",
-                              font="consolas 14 bold").grid(padx=5, pady=5, row=7, column=1)
+
 
     label_5 = tk.Label(ventana,text='RMSE value:',
                               bg="lightblue",fg="black",
                               font="consolas 14 bold").grid(padx=5, pady=5, row=8, column=0)
 
-    label_model_Rmse = tk.Label(ventana,text='',
-                              bg="lightblue",fg="black",
-                              font="consolas 14 bold").grid(padx=5, pady=5, row=8, column=1)
+
+
+
     label_9 = tk.Label(ventana,text='Without outliers',
                               bg="lightblue",fg="blue",
                               font="consolas 20 bold").grid(padx=5, pady=5, row=9, column=0,columnspan=2)
@@ -406,21 +523,31 @@ def Ventana3():
                               bg="lightblue",fg="black",
                               font="consolas 14 bold").grid(padx=5, pady=5, row=10, column=0)
 
-    label_model_score_sin_A = tk.Label(ventana,text='',
-                              bg="lightblue",fg="black",
-                              font="consolas 14 bold").grid(padx=5, pady=5, row=10, column=1)
+
 
     label_7 = tk.Label(ventana,text='RMSE value:',
                               bg="lightblue",fg="black",
                               font="consolas 14 bold").grid(padx=5, pady=5, row=11, column=0)
 
-    label_model_Rmse_sin_a = tk.Label(ventana,text='',
-                              bg="lightblue",fg="black",
-                              font="consolas 14 bold").grid(padx=5, pady=5, row=11, column=1)
+
+
+
+    my_button_1 = tk.Button(ventana, text="Clean", font="consolas 14 bold", command=clean).grid(padx=5, pady=5, row=12, column=0,columnspan=2 )
+
 
     label_aux = tk.Label(ventana,text='',
                               bg="lightblue",fg="black",
                               font="consolas 20 bold").grid(padx=5, pady=5, row=2, column=4)
+
+    label_model_Rmse_con_atip = tk.Label(ventana, text="",bg="white",fg="black",font="consolas 14 bold")
+    label_model_score_con_atip = tk.Label(ventana, text="",bg="white",fg="black",font="consolas 14 bold")
+    label_model_Rmse_sin_atip = tk.Label(ventana, text="",bg="white",fg="black",font="consolas 14 bold")
+    label_model_score_sin_atip= tk.Label(ventana, text="",bg="white",fg="black",font="consolas 14 bold")
+
+    label_model_Rmse_con_atip.grid(padx=5, pady=5, row=8, column=1)
+    label_model_score_con_atip.grid(padx=5, pady=5, row=7, column=1)
+    label_model_Rmse_sin_atip.grid(padx=5, pady=5, row=11, column=1)
+    label_model_score_sin_atip.grid(padx=5, pady=5, row=10, column=1)
 
 
 
@@ -434,25 +561,50 @@ def Ventana3():
                               bg="lightblue",fg="black",
                               font="consolas 14 bold").grid(padx=5, pady=5, row=1, column=5,columnspan=2)
 
+    seleccion1=tk.IntVar()
 
-    tk.Checkbutton(ventana,text="Lenght        ",bg="lightblue",font="consolas 10 bold",variable=aux[0]).grid(padx=5, pady=5, row=2, column=5)
-    tk.Checkbutton(ventana,text="Diameter      ",bg="lightblue",font="consolas 10 bold",variable=aux[1]).grid(padx=5, pady=5, row=3, column=5)
-    tk.Checkbutton(ventana,text="Whole weight  ",bg="lightblue",font="consolas 10 bold",variable=aux[2]).grid(padx=5, pady=5, row=4, column=5)
-    tk.Checkbutton(ventana,text="Whole weight  ",bg="lightblue",font="consolas 10 bold",variable=aux[3]).grid(padx=5, pady=5, row=5, column=5)
-    tk.Checkbutton(ventana,text="Shucked weight",bg="lightblue",font="consolas 10 bold",variable=aux[4]).grid(padx=5, pady=5, row=2, column=6)
-    tk.Checkbutton(ventana,text="Viscera weight",bg="lightblue",font="consolas 10 bold",variable=aux[5]).grid(padx=5, pady=5, row=3, column=6)
-    tk.Checkbutton(ventana,text="Shell weight  ",bg="lightblue",font="consolas 10 bold",variable=aux[6]).grid(padx=5, pady=5, row=4, column=6)
-    tk.Checkbutton(ventana,text="Rings         ",bg="lightblue",font="consolas 10 bold",variable=aux[7]).grid(padx=5, pady=5, row=5, column=6)
+    seleccion2=tk.IntVar()
+
+    seleccion3=tk.IntVar()
+
+    seleccion4=tk.IntVar()
+
+    seleccion5=tk.IntVar()
+
+    seleccion6=tk.IntVar()
+
+    seleccion7=tk.IntVar()
+
+    seleccion8=tk.IntVar()
+
+    check1 = tk.Checkbutton(ventana,text="length        ",bg="lightblue",font="consolas 10 bold",variable=seleccion1)
+    check2 = tk.Checkbutton(ventana,text="Diameter      ",bg="lightblue",font="consolas 10 bold",variable=seleccion2)
+    check3 = tk.Checkbutton(ventana,text="Height        ",bg="lightblue",font="consolas 10 bold",variable=seleccion3)
+    check4 = tk.Checkbutton(ventana,text="Whole weight  ",bg="lightblue",font="consolas 10 bold",variable=seleccion4)
+    check5 = tk.Checkbutton(ventana,text="Shucked weight",bg="lightblue",font="consolas 10 bold",variable=seleccion5)
+    check6 = tk.Checkbutton(ventana,text="Viscera weight",bg="lightblue",font="consolas 10 bold",variable=seleccion6)
+    check7 = tk.Checkbutton(ventana,text="Shell weight  ",bg="lightblue",font="consolas 10 bold",variable=seleccion7)
+    check8 = tk.Checkbutton(ventana,text="Rings         ",bg="lightblue",font="consolas 10 bold",variable=seleccion8)
+
+    check1.grid(padx=5, pady=5, row=2, column=5,)
+    check2.grid(padx=5, pady=5, row=3, column=5)
+    check3.grid(padx=5, pady=5, row=4, column=5)
+    check4.grid(padx=5, pady=5, row=5, column=5)
+    check5.grid(padx=5, pady=5, row=2, column=6)
+    check6.grid(padx=5, pady=5, row=3, column=6)
+    check7.grid(padx=5, pady=5, row=4, column=6)
+    check8.grid(padx=5, pady=5, row=5, column=6)
 
     label_12 = tk.Label(ventana,text='Select Y:',
                               bg="lightblue",fg="black",
                               font="consolas 14 bold").grid(padx=5, pady=5, row=6, column=5)
-    desplegable_entrada_Y = ttk.Combobox(ventana,font="consolas 14 bold",
+    desplegable_entrada_Y_m = ttk.Combobox(ventana,font="consolas 14 bold",
                                       width=16,
                                       values=aux,
-                                      state="readonly").grid(padx=5, pady=5, row=6, column=6)
+                                      state="readonly")
+    desplegable_entrada_Y_m.grid(padx=5, pady=5, row=6, column=6)
 
-    my_button_1 = tk.Button(ventana, text="Predict", font="consolas 14 bold", command=Calcular).grid(padx=5, pady=5, row=7, column=5,columnspan=2 )
+    my_button_2 = tk.Button(ventana, text="Predict", font="consolas 14 bold", command=CalcularM).grid(padx=5, pady=5, row=7, column=5,columnspan=2 )
 
     label_13 = tk.Label(ventana,text='With the outliers',
                               bg="lightblue",fg="blue",
@@ -463,37 +615,57 @@ def Ventana3():
                               bg="lightblue",fg="black",
                               font="consolas 14 bold").grid(padx=5, pady=5, row=9, column=5)
 
-    label_model_score_mul = tk.Label(ventana,text='',
-                              bg="lightblue",fg="black",
-                              font="consolas 14 bold").grid(padx=5, pady=5, row=9, column=6)
+
 
     label_16 = tk.Label(ventana,text='RMSE value:',
                               bg="lightblue",fg="black",
                               font="consolas 14 bold").grid(padx=5, pady=5, row=10, column=5)
 
-    label_model_Rmse_mul = tk.Label(ventana,text='',
-                              bg="lightblue",fg="black",
-                              font="consolas 14 bold").grid(padx=5, pady=5, row=10, column=6)
+
 
     label_14 = tk.Label(ventana,text='Without outliers',
                               bg="lightblue",fg="blue",
                               font="consolas 20 bold").grid(padx=5, pady=5, row=11, column=5,columnspan=2)
 
-    label_17 = tk.Label(ventana,text='Model Score:',
+    label_15 = tk.Label(ventana,text='Model Score:',
                               bg="lightblue",fg="black",
                               font="consolas 14 bold").grid(padx=5, pady=5, row=12, column=5)
 
-    label_model_score_sin_A = tk.Label(ventana,text='',
-                              bg="lightblue",fg="black",
-                              font="consolas 14 bold").grid(padx=5, pady=5, row=12, column=6)
 
-    label_18 = tk.Label(ventana,text='RMSE value:',
+
+    label_16 = tk.Label(ventana,text='RMSE value:',
                               bg="lightblue",fg="black",
                               font="consolas 14 bold").grid(padx=5, pady=5, row=13, column=5)
 
-    label_model_Rmse_sin_a = tk.Label(ventana,text='',
-                              bg="lightblue",fg="black",
-                              font="consolas 14 bold").grid(padx=5, pady=5, row=13, column=6)
+    regre_multi_sin_a_rmse = tk.Label(ventana,text='',
+                              bg="white",fg="black",
+                              font="consolas 14 bold")
+
+
+    regre_multi_sin_a_scor = tk.Label(ventana,text='',
+                              bg="white",fg="black",
+                              font="consolas 14 bold")
+
+    regre_multi_con_a_rmse = tk.Label(ventana,text='',
+                              bg="white",fg="black",
+                              font="consolas 14 bold")
+
+    regre_multi_con_a_scor = tk.Label(ventana,text='',
+                              bg="white",fg="black",
+                              font="consolas 14 bold")
+
+    regre_multi_con_a_rmse.grid(padx=5, pady=5, row=10, column=6)
+    regre_multi_con_a_scor.grid(padx=5, pady=5, row=9, column=6)
+
+    regre_multi_sin_a_rmse.grid(padx=5, pady=5, row=13, column=6)
+    regre_multi_sin_a_scor.grid(padx=5, pady=5, row=12, column=6)
+
+    my_button_2 = tk.Button(ventana, text="Clean", font="consolas 14 bold", command=clean2).grid(padx=5, pady=5, row=14, column=5,columnspan=2 )
+
+
+
+
+        
 
 
 
@@ -632,7 +804,7 @@ my_button.grid(padx=10, pady=10, row=4, column=0, columnspan=2)
 my_button_2 = tk.Button(ventana, text="DataSet Info!", font="consolas 14 bold", command=ventana2)
 my_button_2.grid(padx=10, pady=10, row=4, column=2, columnspan=2)
 
-my_button_3 = tk.Button(ventana, text="Regression Model!", font="consolas 14 bold", command=Ventana3)
+my_button_3 = tk.Button(ventana, text="Regression Model!", font="consolas 14 bold",command=ventana3)
 my_button_3.grid(padx=10, pady=10, row=4, column=4, columnspan=2)
 
 
