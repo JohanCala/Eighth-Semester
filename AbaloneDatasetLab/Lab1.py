@@ -280,6 +280,12 @@ def ventana2():
     rin_median = tk.Label(ventana_2,text=str(list_Rings[2]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=9, column=3)
     rin_kurt = tk.Label(ventana_2,text=str(list_Rings[3]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=9, column=4)    
     rin_skewn = tk.Label(ventana_2,text=str(list_Rings[4]),bg="White",fg="black",font="consolas 14 bold",state="normal").grid(padx=10, pady=10, row=9, column=5)
+    
+    
+    
+
+
+
 
 def ventana3():
     def clean():
