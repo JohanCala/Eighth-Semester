@@ -17,6 +17,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from scipy import stats
 import statistics
+import math 
 
 
 ######  paquetes de analitica de datos
@@ -29,6 +30,8 @@ from sklearn.metrics import mean_squared_error
 	
 import tkinter as tk
 from tkinter import ttk
+from tkinter import messagebox
+
 
 
 ### Funciones
@@ -668,7 +671,217 @@ def ventana3():
 
     my_button_2 = tk.Button(ventana, text="Clean", font="consolas 14 bold", command=clean2).grid(padx=5, pady=5, row=14, column=5,columnspan=2 )
 
+def ventana4():
+    def cleardata():
+        datos = datosbk
+    def modeloTransformadas():   #'none','exponential','square root','squared'
+        if desplegable_t_1.get() == 'exponential':
+            print(":D")  
+        elif desplegable_t_1.get() == 'square root':
+            datos['length'] = pow(datos['length'], (1/2))
+        elif desplegable_t_1.get() == 'squared':
+            datos['length'] = pow(datos['length'], (2))
+        else:
+            datos['length'] = datos['length']
+            
+        if desplegable_t_2.get() == 'exponential':
+            print(":D")  
+        elif desplegable_t_2.get() == 'square root':
+            datos['Diameter'] = pow(datos['Diameter'], (1/2))
+        elif desplegable_t_2.get() == 'squared':
+            datos['Diameter'] = pow(datos['Diameter'], (2))
+        else:
+            datos['Diameter'] = datos['Diameter']
+            
+        if desplegable_t_3.get() == 'exponential':
+            print(":D")  
+        elif desplegable_t_3.get() == 'square root':
+            datos['Height'] = pow(datos['Height'], (1/2))
+        elif desplegable_t_3.get() == 'squared':
+            datos['Height'] = pow(datos['Height'], (2))
+        else:
+            datos['Height'] = datos['Height']
+            
+            
+        if desplegable_t_4.get() == 'exponential':
+            print(":D")  
+        elif desplegable_t_4.get() == 'square root':
+            datos['Whole weight'] = pow(datos['Whole weight'], (1/2))
+        elif desplegable_t_4.get() == 'squared':
+            datos['Whole weight'] = pow(datos['Whole weight'], (2))
+        else:
+            datos['Whole weight'] = datos['Whole weight']
+            
+        if desplegable_t_5.get() == 'exponential':
+            print(":D")  
+        elif desplegable_t_5.get() == 'square root':
+            datos['Shucked weight'] = pow(datos['Shucked weight'], (1/2))
+        elif desplegable_t_5.get() == 'squared':
+            datos['Shucked weight'] = pow(datos['Shucked weight'], (2))
+        else:
+            datos['Shucked weight'] = datos['Shucked weight']
+            
+        if desplegable_t_6.get() == 'exponential':
+            print(":D")  
+        elif desplegable_t_6.get() == 'square root':
+            datos['Viscera weight'] = pow(datos['Viscera weight'], (1/2))
+        elif desplegable_t_6.get() == 'squared':
+            datos['Viscera weight'] = pow(datos['Viscera weight'], (2))
+        else:
+            datos['Viscera weight'] = datos['Viscera weight']
+        if desplegable_t_7.get() == 'exponential':
+            print(":D")  
+        elif desplegable_t_7.get() == 'square root':
+            datos['Shell weight'] = pow(datos['Shell weight'], (1/2))
+        elif desplegable_t_7.get() == 'squared':
+            datos['Shell weight'] = pow(datos['Shell weight'], (2))
+        else:
+            datos['Shell weight'] = datos['Shell weight']
+            
+        
+        X=datos[['length',
+        'Diameter',
+        'Height',
+        'Whole weight',
+        'Shucked weight',
+        'Viscera weight',
+        'Shell weight']]
+        Y=datos['Rings']
+        model = LinearRegression()
 
+        X_train, X_test, y_train, y_test = train_test_split(
+                                                X,
+                                                Y,
+                                                train_size   = 0.5,
+                                            )
+
+        X_train, X_test, y_train, y_test = train_test_split(X, Y, train_size=0.5)
+        model.fit(X = X_train, y = y_train)
+        y_predict = model.predict(X = np.array(X_test))
+        r2 = r2_score(y_true=y_test,y_pred=y_predict)
+        messagebox.showinfo(message=r2, title="ScoreModel")
+
+
+    aux = ['none','exponential','square root','squared']
+
+    ventana = tk.Tk()
+    ventana.title("Data analytics and artificial intelligence")
+    ventana.configure(bg="lightblue")
+
+    titulo = tk.Label(ventana,text='Transformations',bg="lightblue",
+                              fg="blue",
+                              font="consolas 25 bold")
+    titulo.grid(padx=5, pady=5, row=0, column=0, columnspan=4)
+
+    #colums labels
+
+    label_1 = tk.Label(ventana,text='length',bg="lightblue",
+                              fg="black",
+                              font="consolas 14 bold")
+    label_1.grid(padx=1, pady=1, row=1, column=0)
+
+    label_1 = tk.Label(ventana,text='Diameter',bg="lightblue",
+                              fg="black",
+                              font="consolas 14 bold")
+    label_1.grid(padx=1, pady=1, row=2, column=0)
+
+    label_1 = tk.Label(ventana,text='Height',bg="lightblue",
+                              fg="black",
+                              font="consolas 14 bold")
+    label_1.grid(padx=1, pady=1, row=3, column=0)
+
+    label_1 = tk.Label(ventana,text='Whole weight',bg="lightblue",
+                              fg="black",
+                              font="consolas 14 bold")
+    label_1.grid(padx=1, pady=1, row=4, column=0)
+
+    label_1 = tk.Label(ventana,text='Shucked weight',bg="lightblue",
+                              fg="black",
+                              font="consolas 14 bold")
+    label_1.grid(padx=1, pady=1, row=5, column=0)
+
+    label_1 = tk.Label(ventana,text='Viscera weight',bg="lightblue",
+                              fg="black",
+                              font="consolas 14 bold")
+    label_1.grid(padx=1, pady=1, row=6, column=0)
+
+    label_1 = tk.Label(ventana,text='Shell weight',bg="lightblue",
+                              fg="black",
+                              font="consolas 14 bold")
+    label_1.grid(padx=1, pady=1, row=7, column=0)
+
+
+    #Combo Box
+
+    desplegable_t_1 = ttk.Combobox(ventana,font="consolas 14 bold",
+                                      width=16,
+                                      values=aux,
+                                      state="readonly")
+    desplegable_t_1.grid(padx=1, pady=1, row=1, column=1)
+
+    desplegable_t_2 = ttk.Combobox(ventana,font="consolas 14 bold",
+                                      width=16,
+                                      values=aux,
+                                      state="readonly")
+    desplegable_t_2.grid(padx=1, pady=1, row=2, column=1)
+
+    desplegable_t_3 = ttk.Combobox(ventana,font="consolas 14 bold",
+                                      width=16,
+                                      values=aux,
+                                      state="readonly")
+    desplegable_t_3.grid(padx=1, pady=1, row=3, column=1)
+
+    desplegable_t_4 = ttk.Combobox(ventana,font="consolas 14 bold",
+                                      width=16,
+                                      values=aux,
+                                      state="readonly")
+    desplegable_t_4.grid(padx=1, pady=1, row=4, column=1)
+
+    desplegable_t_5 = ttk.Combobox(ventana,font="consolas 14 bold",
+                                      width=16,
+                                      values=aux,
+                                      state="readonly")
+    desplegable_t_5.grid(padx=1, pady=1, row=5, column=1)
+
+    desplegable_t_6 = ttk.Combobox(ventana,font="consolas 14 bold",
+                                      width=16,
+                                      values=aux,
+                                      state="readonly")
+    desplegable_t_6.grid(padx=1, pady=1, row=6, column=1)
+
+    desplegable_t_7 = ttk.Combobox(ventana,font="consolas 14 bold",
+                                      width=16,
+                                      values=aux,
+                                      state="readonly")
+    desplegable_t_7.grid(padx=1, pady=1, row=7, column=1)
+
+
+    #botones
+    my_button_t_1 = tk.Button(ventana, text="Score", font="consolas 14 bold", command=modeloTransformadas)
+    my_button_t_1.grid(padx=1, pady=1, row=8, column=0 )
+
+    my_button_t_2 = tk.Button(ventana, text="Clear", font="consolas 14 bold", command=cleardata)
+    my_button_t_2.grid(padx=1, pady=1, row=8, column=1)
+
+    #Archivo
+
+
+
+
+    archivo='abalone.csv'
+
+     
+    datos=pd.read_csv(archivo)
+    columnas=['sex', 'length',
+    'Diameter',
+    'Height',
+    'Whole weight',
+    'Shucked weight',
+    'Viscera weight',
+    'Shell weight',
+    'Rings' ]
+    datos.columns=columnas
+    datosbk = datos.copy()
 
 
         
@@ -703,9 +916,9 @@ aux = ['length',
 'Shell weight',
 'Rings' ]
 
-### modelo de una sola entrada
+##"# modelo de una "sola entrada
 
-X=datos['length']
+"""X=datos['length']
 Y=datos['Rings']
 
 X_train, X_test, y_train, y_test = train_test_split(
@@ -720,7 +933,7 @@ print('entrada longitud, salida anillos',modelo.score(np.array(X).reshape(-1, 1)
 
 predicciones = modelo.predict(X = np.array(X_test).reshape(-1,1))
 rmse = mean_squared_error(y_true  = y_test, y_pred  = predicciones)
-print('el valor del rmse es',rmse)
+print('el valor del rmse es',rmse)"""
 
 
 
@@ -812,6 +1025,9 @@ my_button_2.grid(padx=10, pady=10, row=4, column=2, columnspan=2)
 
 my_button_3 = tk.Button(ventana, text="Regression Model!", font="consolas 14 bold",command=ventana3)
 my_button_3.grid(padx=10, pady=10, row=4, column=4, columnspan=2)
+
+my_button_4 = tk.Button(ventana, text="Transformations", font="consolas 14 bold",command=ventana4)
+my_button_4.grid(padx=10, pady=10, row=3, column=3, columnspan=2)
 
 
 ventana.mainloop()
